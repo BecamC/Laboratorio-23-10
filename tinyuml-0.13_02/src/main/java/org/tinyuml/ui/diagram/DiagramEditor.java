@@ -32,6 +32,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Dimension2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
@@ -605,6 +606,39 @@ DiagramEditorNotification, DiagramOperations, NodeChangeListener {
   public void setScaling(Scaling aScaling) {
     scaling = aScaling;
     repaint();
+  }
+
+  /**
+   * Adjusts the zoom and the visible area, so all the elements of the
+   * diagram can be seen in the window. Only the view changes, the position
+   * and the size of the elements are not modified.
+   */
+  public void fitToWindow() {
+    Rectangle visible = getVisibleRect();
+    Rectangle2D bounds = null;
+    for (DiagramElement element : diagram.getChildren()) {
+      if (bounds == null) {
+        bounds = element.getAbsoluteBounds();
+      } else {
+        bounds.add(element.getAbsoluteBounds());
+      }
+    }
+    if (bounds == null || visible.isEmpty()) {
+      // empty diagram, there is nothing to fit
+      setScaling(Scaling.SCALING_100);
+      scrollRectToVisible(new Rectangle(0, 0, 1, 1));
+      return;
+    }
+    double factor = Math.min(
+      visible.getWidth() / (bounds.getWidth() + MARGIN_LEFT + MARGIN_RIGHT),
+      visible.getHeight() / (bounds.getHeight() + MARGIN_TOP + MARGIN_BOTTOM));
+    // the canvas is not scaled, so do not zoom in beyond 100 %
+    factor = Math.min(factor, 1.0);
+    setScaling(new Scaling(factor));
+    scrollRectToVisible(new Rectangle(
+      (int) ((bounds.getX() - MARGIN_LEFT) * factor),
+      (int) ((bounds.getY() - MARGIN_TOP) * factor),
+      visible.width, visible.height));
   }
 
   /**
