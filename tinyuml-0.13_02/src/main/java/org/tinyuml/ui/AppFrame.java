@@ -83,6 +83,7 @@ implements EditorStateListener, AppCommandListener, SelectionListener {
   private JLabel memLabel = new JLabel("    ");
   private ElementCountLabel countLabel = new ElementCountLabel();
   private SelectedElementLabel selectedLabel = new SelectedElementLabel();
+  private SelectionCountLabel selectionCountLabel = new SelectionCountLabel();
   private UmlModel umlModel;
   private DiagramEditor currentEditor;
   private transient Timer timer = new Timer();
@@ -202,6 +203,9 @@ implements EditorStateListener, AppCommandListener, SelectionListener {
     currentEditor.addSelectionListener(selectedLabel);
     currentEditor.addEditorStateListener(selectedLabel);
     selectedLabel.setEditor(currentEditor);
+    currentEditor.addSelectionListener(selectionCountLabel);
+    currentEditor.addEditorStateListener(selectionCountLabel);
+    selectionCountLabel.setEditor(currentEditor);
     currentEditor.addAppCommandListener(editorDispatcher);
     currentEditor.addAppCommandListener(this);
     JScrollPane spane = new JScrollPane(currentEditor);
@@ -252,6 +256,7 @@ implements EditorStateListener, AppCommandListener, SelectionListener {
     JPanel infoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 0));
     infoPanel.add(countLabel);
     infoPanel.add(selectedLabel);
+    infoPanel.add(selectionCountLabel);
     statusbar.add(infoPanel, BorderLayout.CENTER);
     statusbar.add(memLabel, BorderLayout.EAST);
     getContentPane().add(statusbar, BorderLayout.SOUTH);
