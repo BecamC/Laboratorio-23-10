@@ -41,6 +41,7 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
@@ -247,10 +248,20 @@ DiagramEditorNotification, DiagramOperations, NodeChangeListener {
   }
 
   /**
-   * Removes the current selection.
+   * Removes the current selection. If several elements are selected, the
+   * user has to confirm the deletion first.
    */
   public void deleteSelection() {
     Collection<DiagramElement> elements = getSelectedElements();
+    if (elements.size() > 1) {
+      int answer = JOptionPane.showConfirmDialog(this,
+        "\u00bfDesea eliminar los " + elements.size()
+        + " elementos seleccionados?", "Confirmar eliminaci\u00f3n",
+        JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+      if (answer != JOptionPane.YES_OPTION) {
+        return;
+      }
+    }
     execute(new DeleteElementCommand(this, elements));
   }
   /**
