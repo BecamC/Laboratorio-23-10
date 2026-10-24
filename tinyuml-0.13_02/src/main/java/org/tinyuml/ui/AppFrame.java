@@ -23,6 +23,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -81,6 +82,7 @@ implements EditorStateListener, AppCommandListener, SelectionListener {
   private JLabel coordLabel = new JLabel("    ");
   private JLabel memLabel = new JLabel("    ");
   private ElementCountLabel countLabel = new ElementCountLabel();
+  private SelectedElementLabel selectedLabel = new SelectedElementLabel();
   private UmlModel umlModel;
   private DiagramEditor currentEditor;
   private transient Timer timer = new Timer();
@@ -197,6 +199,9 @@ implements EditorStateListener, AppCommandListener, SelectionListener {
     currentEditor.addSelectionListener(this);
     currentEditor.addEditorStateListener(countLabel);
     countLabel.update(currentEditor);
+    currentEditor.addSelectionListener(selectedLabel);
+    currentEditor.addEditorStateListener(selectedLabel);
+    selectedLabel.setEditor(currentEditor);
     currentEditor.addAppCommandListener(editorDispatcher);
     currentEditor.addAppCommandListener(this);
     JScrollPane spane = new JScrollPane(currentEditor);
@@ -244,7 +249,10 @@ implements EditorStateListener, AppCommandListener, SelectionListener {
   private void installStatusbar() {
     JPanel statusbar = new JPanel(new BorderLayout());
     statusbar.add(coordLabel, BorderLayout.WEST);
-    statusbar.add(countLabel, BorderLayout.CENTER);
+    JPanel infoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 0));
+    infoPanel.add(countLabel);
+    infoPanel.add(selectedLabel);
+    statusbar.add(infoPanel, BorderLayout.CENTER);
     statusbar.add(memLabel, BorderLayout.EAST);
     getContentPane().add(statusbar, BorderLayout.SOUTH);
   }
